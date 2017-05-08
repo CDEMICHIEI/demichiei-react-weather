@@ -1,5 +1,5 @@
 module.exports = {
-    "extends": "standard",
+    "extends": "react-app",
     "plugins": [
         "standard",
         "promise"

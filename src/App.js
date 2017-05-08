@@ -3,35 +3,40 @@ import PropTypes from 'prop-types';
 import logo from './logo.svg';
 import './App.css';
 import {loadZip} from './lib/weatherService';
+import {loadHistory,saveHistory} from './lib/historyService';
 import {getDay, cullWeek, firstLettersUpper} from './util/functions';
 
-const monday = {
-    dt_txt:"Monday",
-    main:{
-      temp:75
-    },
-    weather:[{
-      icon:"01d",
-      description:"Sunny"}
-    ]
-}
-const ZipInput = (props) => {
 
+const ZipHistoryList = (props) => {
+  const list = props.history.map(item => <option value={item.zip}>{item.city}</option>)
+  return(
+    <datalist id="history">
+      {list}
+    </datalist>
+  )
+}
+
+
+const ZipInput = (props) => {
 
   return(
     <div className='row'>
-      <form onSubmit={props.handleSubmit} className=''>
-        <div className='form-group col-xs-2 col-xs-offset-5'>
+      <form onSubmit={props.handleSubmit} className='form-inline'>
+        <div className='form-group '>
           <label>Zip Code</label>
           <input type="text"
             className='zipInput form-control'
             onChange={props.handleInputChange}
-            value={props.zip} />
+            value={props.zip}
+            list="history"/>
+          <button type="submit" className="btn btn-default">Submit</button>
+          <ZipHistoryList history={props.history}/>
         </div>
       </form>
     </div>
   )
 }
+
 
 const Weather = (props) => {
   const day = props.day
@@ -89,11 +94,16 @@ const Forecast = (props) => {
 
 class App extends Component {
   state ={
-    zip:'12345',
-    today:monday,
+    zip:'',
+    today:'',
     week:[],
     city:"This area",
     zipHistory:[]
+  }
+  componentWillMount() {
+    // get search history
+    loadHistory()
+     .then(x=>this.setState({zipHistory: x}))
   }
 
   handleInputChange = (e) => {
@@ -104,13 +114,21 @@ class App extends Component {
   handleSubmit = (e) => {
     e.preventDefault()
     const zip =  this.state.zip
+    const hist = this.state.zipHistory
     if (zip.match(/^\d{5}$/)) {
     loadZip(zip)
-     .then(response => this.setState({
-       today: response.today,
-       city: response.today.name,
-       week : cullWeek(response.week)
-     }))
+     .then(response =>{
+       const newZip ={zip:zip,id:(+zip),city:response.today.name}
+       const newHist = (!hist.map(x => x.zip).includes(newZip.zip)) ? hist.concat(newZip) : hist
+       this.setState({
+         zip:'',
+         today: response.today,
+         city: response.today.name,
+         week : cullWeek(response.week),
+         zipHistory:newHist
+       })
+       saveHistory(newZip)
+      })
    }
   }
 
@@ -126,9 +144,14 @@ class App extends Component {
             zip={this.state.zip}
             handleInputChange={this.handleInputChange}
             handleSubmit={this.handleSubmit}
+            history={this.state.zipHistory}
           />
-          <Daily day={this.state.today}/>
-          <Forecast days={this.state.week}/>
+          {this.state.today &&
+            <Daily day={this.state.today}/>
+          }
+          {this.state.week.length>0 &&
+            <Forecast days={this.state.week}/>
+          }
         </div>
       </div>
     );

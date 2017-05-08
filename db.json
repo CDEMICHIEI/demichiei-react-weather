@@ -1,0 +1,34 @@
+{
+  "zips": [
+    {
+      "zip": "15068",
+      "id": 15068,
+      "city": "Lower Burrell"
+    },
+    {
+      "zip": "20850",
+      "id": 20850,
+      "city": "Rockville"
+    },
+    {
+      "zip": "15675",
+      "id": 15675,
+      "city": "Jeannette"
+    },
+    {
+      "zip": "90210",
+      "id": 90210,
+      "city": "Beverly Hills"
+    },
+    {
+      "zip": "20910",
+      "id": 20910,
+      "city": "Silver Spring"
+    },
+    {
+      "zip": "60652",
+      "id": 60652,
+      "city": "Hometown"
+    }
+  ]
+}
