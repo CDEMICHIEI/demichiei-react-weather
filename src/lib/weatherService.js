@@ -1,6 +1,6 @@
 const baseURL = 'http://api.openweathermap.org/data/2.5/'
 const appID = '&appid=b87ef13e00bc9136960cd7c0541a91b3'
-const params = '&units=imperial&cnt=48'
+const params = '&units=imperial&cnt=50'
 
 const formatZip = zip => "?zip="+zip+",us"
 
