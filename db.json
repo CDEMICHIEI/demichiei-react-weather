@@ -29,6 +29,21 @@
       "zip": "60652",
       "id": 60652,
       "city": "Hometown"
+    },
+    {
+      "zip": "20851",
+      "id": 20851,
+      "city": "Rockville"
+    },
+    {
+      "zip": "22102",
+      "id": 22102,
+      "city": "Tysons Corner"
+    },
+    {
+      "zip": "20202",
+      "id": 20202,
+      "city": "Washington, D. C."
     }
   ]
 }

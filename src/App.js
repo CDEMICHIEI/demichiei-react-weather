@@ -4,11 +4,21 @@ import logo from './logo.svg';
 import './App.css';
 import {loadZip} from './lib/weatherService';
 import {loadHistory,saveHistory} from './lib/historyService';
-import {getDay, cullWeek, firstLettersUpper} from './util/functions';
+import {getDay, cullWeek, firstLettersUpper, getCondition} from './util/functions';
+
+import cloudy from './weather/koushik-c-203268.png'
+import clear from './weather/aleksandr-kozlovskii-2925.png'
+import raining from './weather/reza-shayestehpour-14238.png'
+import snowing from './weather/filip-bunkens-155405.png'
+import overcast from './weather/stefan-widua-224033.png'
+import thunder from './weather/guillaume-150.png'
+import foggy from './weather/chad-madden-235406.png'
+
+const weatherBG = {cloudy, clear,raining,snowing,overcast,thunder,foggy}
 
 
 const ZipHistoryList = (props) => {
-  const list = props.history.map(item => <option value={item.zip}>{item.city}</option>)
+  const list = props.history.map(item => <option value={item.zip} key={item.zip}>{item.city}</option>)
   return(
     <datalist id="history">
       {list}
@@ -21,10 +31,11 @@ const ZipInput = (props) => {
 
   return(
     <div className='row'>
-      <form onSubmit={props.handleSubmit} className='form-inline'>
-        <div className='form-group '>
-          <label>Zip Code</label>
+      <form onSubmit={props.handleSubmit} className='form-inline '>
+        <div className='form-group  fancybox'>
+          <label for="zipInput" className=''>Zip Code</label>
           <input type="text"
+            id="zipInput"
             className='zipInput form-control'
             onChange={props.handleInputChange}
             value={props.zip}
@@ -70,7 +81,7 @@ Weather.defaultProps = {
 const Daily = (props) => {
   return(
     <div className="row daily">
-      <h2>Today's Forecast {props.day.name}</h2>
+      <h2 ><span className="fancybox">Today's Forecast {props.day.name}</span></h2>
       <div className="center-block today">
         <Weather {...props}/>
       </div>
@@ -85,7 +96,7 @@ const Forecast = (props) => {
   </div>)
   return (
     <div className="row forecast">
-      <h3>5-day Forecast</h3>
+      <h3><span className="fancybox">5-day Forecast</span></h3>
       <div className='col-xs-1'/>
       {week}
     </div>
@@ -98,12 +109,13 @@ class App extends Component {
     today:'',
     week:[],
     city:"This area",
-    zipHistory:[]
+    zipHistory:[],
+    style:{backgroundImage:clear}
   }
   componentWillMount() {
     // get search history
     loadHistory()
-     .then(x=>this.setState({zipHistory: x}))
+     .then(x=>this.setState({zipHistory: x.sort((a,b) => a.city - b.city)}))
   }
 
   handleInputChange = (e) => {
@@ -120,12 +132,16 @@ class App extends Component {
      .then(response =>{
        const newZip ={zip:zip,id:(+zip),city:response.today.name}
        const newHist = (!hist.map(x => x.zip).includes(newZip.zip)) ? hist.concat(newZip) : hist
+       const condition = response.today ? `${getCondition(response.today.weather[0].id.toString())}` : ""
+       const style={backgroundImage:'url('+weatherBG[condition]+')'}
+
        this.setState({
          zip:'',
          today: response.today,
          city: response.today.name,
          week : cullWeek(response.week),
-         zipHistory:newHist
+         zipHistory:newHist,
+         style:style
        })
        saveHistory(newZip)
       })
@@ -134,7 +150,7 @@ class App extends Component {
 
   render() {
     return (
-      <div className="App">
+      <div className="App" style={this.state.style}>
         <div className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h2>Find your local forcast</h2>
