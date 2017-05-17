@@ -1,0 +1,25 @@
+.iconContainer{
+  display: flex;
+  justify-content: center;
+}
+
+.icon, .icon-small {
+  background: center no-repeat;
+  background-size: contain;
+  /*animation: icon-spin infinite 240s linear;*/
+  display: flex;
+}
+
+.icon {
+  width: 100px;
+  height: 100px;
+}
+.icon-small {
+  width: 50px;
+  height: 50px;
+}
+@keyframes icon-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+
+}
